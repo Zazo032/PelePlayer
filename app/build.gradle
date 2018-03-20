@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 'android-P'
+    compileSdkVersion 27
     buildToolsVersion "28.0.0-rc1"
     defaultConfig {
         applicationId "com.czazo.peleplayer"
         minSdkVersion 26
-        targetSdkVersion 'android-P'
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
