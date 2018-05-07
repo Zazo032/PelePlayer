@@ -1,16 +1,12 @@
 package com.czazo.peleplayer;
 
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
-
-import java.io.File;
 
 public class MusicPlayer extends MediaPlayer {
     private MusicPlayer instance;
     private Song currentSong;
 
-    protected MusicPlayer() {
+    private MusicPlayer() {
         super();
     }
 
