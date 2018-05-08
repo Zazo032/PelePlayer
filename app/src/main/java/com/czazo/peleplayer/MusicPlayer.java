@@ -3,7 +3,6 @@ package com.czazo.peleplayer;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,6 +31,7 @@ public class MusicPlayer extends MediaPlayer {
     public void play(int pos){
         this.reset();
         Song songToPlay = songs.get(pos);
+        if(songToPlay == null) return;
         try {
             this.setDataSource(songToPlay.getFilePath());
             this.prepare();
