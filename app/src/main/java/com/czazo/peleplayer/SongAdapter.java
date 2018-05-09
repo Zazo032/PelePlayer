@@ -2,6 +2,7 @@ package com.czazo.peleplayer;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     private ArrayList<Song> songList;
+    private MusicPlayer mp;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView cover;
@@ -31,7 +33,13 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
 
     SongAdapter() {
         songList = new ArrayList<>();
-        // TODO: Escanear almacenamiento para buscar canciones
+        ArrayList<String> pathList = new SongLoader().getSongList();
+        for (String path : pathList) {
+            Song s = SongFactory.getSong(path);
+            songList.add(s);
+        }
+        mp = new MusicPlayer();
+        mp.setSongs(songList);
     }
 
     @NonNull
@@ -42,8 +50,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Song song = songList.get(position);
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+        final Song song = songList.get(position);
         holder.title.setText(song.getTitle());
         holder.author.setText(song.getAuthor());
         holder.album.setText(song.getAlbum());
@@ -52,7 +60,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Lanzar reproductor con la canción seleccionada
+                mp.play(holder.getAdapterPosition());
             }
         });
     }

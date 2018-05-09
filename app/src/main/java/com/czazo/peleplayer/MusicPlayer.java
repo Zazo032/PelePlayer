@@ -12,7 +12,7 @@ public class MusicPlayer extends MediaPlayer {
     private int posCurrentSong;
     private List<Song> songs;
 
-    private MusicPlayer() {
+    MusicPlayer() {
         super();
         this.setAudioAttributes( new AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)

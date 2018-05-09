@@ -1,8 +1,10 @@
 package com.czazo.peleplayer;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
+import android.util.Log;
 
 public class Song {
     private String filePath;
@@ -12,7 +14,8 @@ public class Song {
     private String album;
     private String duration;
 
-    public Song(String filePath) {
+    @SuppressLint("DefaultLocale")
+    Song(String filePath) {
         this.filePath = filePath;
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         mmr.setDataSource(filePath);
@@ -20,12 +23,18 @@ public class Song {
         if(artBytes != null) {
             coverArt = BitmapFactory.decodeByteArray(artBytes, 0, artBytes.length);
         } else {
-            //Make the covert art be the default one
+            // TODO: Make the covert art be the default one
         }
         album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+        if (album == null) album = "Álbum desconocido";
         title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        if (title == null) title = "Sin título";
         author = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR);
-        duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        if (author == null) author = "Autor desconocido";
+        int durationTime = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        int mns = (durationTime / 60000) % 60000;
+        int scs = durationTime % 60000 / 1000;
+        duration = String.format("%d:%02d",  mns, scs);
     }
 
     public void setAlbum(String album) {
@@ -36,20 +45,12 @@ public class Song {
         this.author = author;
     }
 
-    public void setCoverArt(Bitmap coverArt) {
-        this.coverArt = coverArt;
-    }
-
     public void setDuration(String duration) {
         this.duration = duration;
     }
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
     }
 
     public Bitmap getCoverArt() {
