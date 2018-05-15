@@ -13,6 +13,7 @@ public class MusicPlayer extends MediaPlayer {
     // 0 = Stop/Pause, 1 = Play
     private List<Song> songs;
     private int pausedTime;
+    private Command command;
 
     private MusicPlayer() {
         super();
@@ -54,10 +55,12 @@ public class MusicPlayer extends MediaPlayer {
 
     public void playNext() {
         if (posCurrentSong+1 == songs.size()) {
-            play(0);
+            posCurrentSong = 0;
+            play(posCurrentSong);
         } else {
             play(++posCurrentSong);
         }
+        pausedTime = 0;
     }
 
     public void playPrevious() {
@@ -70,6 +73,7 @@ public class MusicPlayer extends MediaPlayer {
                 play(--posCurrentSong);
             }
         }
+        pausedTime = 0;
     }
 
     public Song getCurrentSong(){
@@ -100,5 +104,12 @@ public class MusicPlayer extends MediaPlayer {
 
     public void setSongs(List<Song> songs) {
         this.songs = songs;
+    }
+
+    public void setCommand(Command c){
+        this.command = c;
+    }
+    public void buttonPressed(){
+        command.execute();
     }
 }

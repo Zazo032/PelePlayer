@@ -1,5 +1,6 @@
 package com.czazo.peleplayer;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     private ArrayList<Song> songList;
+    private Command playPauseCommand;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView cover;
@@ -60,10 +62,9 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MusicPlayer.getInstance().play(holder.getAdapterPosition());
-                MusicPlayer.getInstance().setStatus(1);
-                Intent i = new Intent(view.getContext(), PlayerActivity.class);
-                view.getContext().startActivity(i);
+                playPauseCommand = new PlayCommand(holder.getAdapterPosition(), 0, (Activity)view.getContext());
+                MusicPlayer.getInstance().setCommand(playPauseCommand);
+                MusicPlayer.getInstance().buttonPressed();
             }
         });
     }

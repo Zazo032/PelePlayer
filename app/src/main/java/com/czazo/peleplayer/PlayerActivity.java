@@ -1,10 +1,12 @@
 package com.czazo.peleplayer;
 
+import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -18,6 +20,7 @@ public class PlayerActivity extends AppCompatActivity {
     SeekBar sb;
     FloatingActionButton prev, next, playpause;
     TextView songTitle, currTime, maxTime;
+    Command playCommand, pauseCommand, nextCommand, prevCommand;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,48 +49,52 @@ public class PlayerActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                MusicPlayer.getInstance().seekTo(nextSeekbarTime);
+                MusicPlayer.getInstance().seekTo(nextSeekbarTime*1000);
+                if (MusicPlayer.getInstance().getStatus() == 0) {
+                    MusicPlayer.getInstance().setPausedTime(nextSeekbarTime*1000);
+                }
             }
         });
 
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MusicPlayer.getInstance().playPrevious();
+                prevCommand = new PrevCommand((Activity)view.getContext());
+                MusicPlayer.getInstance().setCommand(prevCommand);
+                MusicPlayer.getInstance().buttonPressed();
                 updatePlayerUI(MusicPlayer.getInstance().getCurrentSong());
             }
         });
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MusicPlayer.getInstance().playNext();
+                nextCommand = new NextCommand((Activity)view.getContext());
+                MusicPlayer.getInstance().setCommand(nextCommand);
+                MusicPlayer.getInstance().buttonPressed();
                 updatePlayerUI(MusicPlayer.getInstance().getCurrentSong());
             }
         });
         playpause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Animation toPause = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.to_pause);
-                Animation toPlay = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.to_play);
-                if (MusicPlayer.getInstance().getStatus() == 0) {
-                    MusicPlayer.getInstance().play(MusicPlayer.getInstance().getPosCurrentSong());
-                    MusicPlayer.getInstance().seekTo(MusicPlayer.getInstance().getPausedTime());
-                    playpause.startAnimation(toPause);
-                    playpause.setImageResource(R.drawable.ic_player_pause);
-                    MusicPlayer.getInstance().setStatus(1);
-                } else {
-                    MusicPlayer.getInstance().pause();
-                    MusicPlayer.getInstance().setPausedTime(MusicPlayer.getInstance().getCurrentPosition());
-                    playpause.startAnimation(toPlay);
-                    playpause.setImageResource(R.drawable.ic_player_play);
-                    MusicPlayer.getInstance().setStatus(0);
+                switch (MusicPlayer.getInstance().getStatus()) {
+                    case 0:
+                        playCommand = new PlayCommand(MusicPlayer.getInstance().getPosCurrentSong(), 1, (Activity)view.getContext());
+                        MusicPlayer.getInstance().setCommand(playCommand);
+                        break;
+                    case 1:
+                        pauseCommand = new PauseCommand((Activity)view.getContext());
+                        MusicPlayer.getInstance().setCommand(pauseCommand);
+                        break;
                 }
+                MusicPlayer.getInstance().buttonPressed();
             }
         });
         MusicPlayer.getInstance().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                MusicPlayer.getInstance().playNext();
+                MusicPlayer.getInstance().setCommand(nextCommand);
+                MusicPlayer.getInstance().buttonPressed();
                 updatePlayerUI(MusicPlayer.getInstance().getCurrentSong());
             }
         });
