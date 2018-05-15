@@ -8,20 +8,29 @@ import java.io.IOException;
 import java.util.List;
 
 public class MusicPlayer extends MediaPlayer {
-    private MusicPlayer instance;
-    private int posCurrentSong;
+    private static MusicPlayer instance;
+    private int posCurrentSong, status;
+    // 0 = Stop/Pause, 1 = Play
     private List<Song> songs;
+    private int pausedTime;
 
-    MusicPlayer() {
+    private MusicPlayer() {
         super();
-        this.setAudioAttributes( new AudioAttributes.Builder()
+        this.setAudioAttributes(new AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .setUsage(AudioAttributes.USAGE_MEDIA)
-                .build()
-        );
+                .build());
+        instance = this;
+        instance.setOnCompletionListener(new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                playNext();
+            }
+        });
+        status = 0;
     }
 
-    public MusicPlayer getInstance() {
+    public static MusicPlayer getInstance() {
         if (instance == null) {
             instance = new MusicPlayer();
         }
@@ -39,24 +48,54 @@ public class MusicPlayer extends MediaPlayer {
             this.start();
         } catch (IOException e) {
             Log.e("MusicPlayer", "No se ha encontrado el archivo en la ruta de datos");
-            play(pos++);
+            play(++pos);
         }
     }
 
     public void playNext() {
-        play(posCurrentSong++);
+        if (posCurrentSong+1 == songs.size()) {
+            play(0);
+        } else {
+            play(++posCurrentSong);
+        }
     }
 
     public void playPrevious() {
-        play(posCurrentSong--);
+        if (getCurrentPosition() > 2500) {
+            play(posCurrentSong);
+        } else {
+            if (posCurrentSong == 0) {
+                play(songs.size()-1);
+            } else {
+                play(--posCurrentSong);
+            }
+        }
+    }
+
+    public Song getCurrentSong(){
+        return songs.get(posCurrentSong);
     }
 
     public int getPosCurrentSong() {
         return posCurrentSong;
     }
 
-    public List<Song> getSongs() {
-        return songs;
+    public int getPausedTime() {
+        int aux = pausedTime;
+        this.pausedTime = 0;
+        return aux;
+    }
+
+    public void setPausedTime(int p){
+        this.pausedTime = p;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int s) {
+        this.status = s;
     }
 
     public void setSongs(List<Song> songs) {

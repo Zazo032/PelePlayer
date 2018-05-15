@@ -68,8 +68,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="2.5"
                 android:adjustViewBounds="true"
-                android:background="@color/cardview_light_background"
-                app:srcCompat="@color/colorPrimary" />
+                app:srcCompat="@drawable/default_cover" />
         </LinearLayout>
 
 </LinearLayout>

@@ -1,8 +1,8 @@
 package com.czazo.peleplayer;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +13,6 @@ import java.util.ArrayList;
 
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
     private ArrayList<Song> songList;
-    private MusicPlayer mp;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView cover;
@@ -38,8 +37,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
             Song s = SongFactory.getSong(path);
             songList.add(s);
         }
-        mp = new MusicPlayer();
-        mp.setSongs(songList);
+        MusicPlayer.getInstance().setSongs(songList);
     }
 
     @NonNull
@@ -56,11 +54,16 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.ViewHolder> {
         holder.author.setText(song.getAuthor());
         holder.album.setText(song.getAlbum());
         holder.duration.setText(song.getDuration());
-        holder.cover.setImageBitmap(song.getCoverArt());
+        if (song.getCoverArt() != null) {
+            holder.cover.setImageBitmap(song.getCoverArt());
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mp.play(holder.getAdapterPosition());
+                MusicPlayer.getInstance().play(holder.getAdapterPosition());
+                MusicPlayer.getInstance().setStatus(1);
+                Intent i = new Intent(view.getContext(), PlayerActivity.class);
+                view.getContext().startActivity(i);
             }
         });
     }

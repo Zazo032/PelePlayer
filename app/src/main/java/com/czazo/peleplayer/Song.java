@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
-import android.util.Log;
 
 public class Song {
     private String filePath;
@@ -13,6 +12,7 @@ public class Song {
     private String author;
     private String album;
     private String duration;
+    private int durationTime;
 
     @SuppressLint("DefaultLocale")
     Song(String filePath) {
@@ -22,8 +22,6 @@ public class Song {
         byte[] artBytes = mmr.getEmbeddedPicture();
         if(artBytes != null) {
             coverArt = BitmapFactory.decodeByteArray(artBytes, 0, artBytes.length);
-        } else {
-            // TODO: Make the covert art be the default one
         }
         album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
         if (album == null) album = "Álbum desconocido";
@@ -31,7 +29,7 @@ public class Song {
         if (title == null) title = "Sin título";
         author = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR);
         if (author == null) author = "Autor desconocido";
-        int durationTime = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        durationTime = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
         int mns = (durationTime / 60000) % 60000;
         int scs = durationTime % 60000 / 1000;
         duration = String.format("%d:%02d",  mns, scs);
@@ -67,6 +65,10 @@ public class Song {
 
     public String getDuration() {
         return duration;
+    }
+
+    public int getDurationTime() {
+        return durationTime;
     }
 
     public String getFilePath() {
