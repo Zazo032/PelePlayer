@@ -3,16 +3,20 @@ package com.czazo.peleplayer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Subject {
+public class TimeSubject {
     private List<Observer> observers = new ArrayList<Observer>();
-    private int state;
+    private int currentTime;
 
-    public int getState(){
-        return state;
+    public TimeSubject (){
+        currentTime = 0;
+    }
+
+    public int getCurrentTime(){
+        return currentTime;
     };
 
-    public void setState(int state) {
-        this.state = state;
+    public void setCurrentTime(int state) {
+        this.currentTime = state;
         notifyAllObservers();
     }
 

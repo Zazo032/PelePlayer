@@ -22,12 +22,6 @@ public class MusicPlayer extends MediaPlayer {
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .build());
         instance = this;
-        instance.setOnCompletionListener(new OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                playNext();
-            }
-        });
         status = 0;
     }
 
@@ -36,6 +30,10 @@ public class MusicPlayer extends MediaPlayer {
             instance = new MusicPlayer();
         }
         return instance;
+    }
+
+    public static boolean isInstanciated() {
+        return instance != null;
     }
 
     public void play(int pos){

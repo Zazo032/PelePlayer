@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,9 +22,13 @@ public class PlayerActivity extends AppCompatActivity {
     FloatingActionButton prev, next, playpause;
     TextView songTitle, currTime, maxTime;
     Command playCommand, pauseCommand, nextCommand, prevCommand;
+    TimeSubject timeSubject;
+    TimeObserver timeObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        timeSubject = new TimeSubject();
+        timeObserver = new TimeObserver(timeSubject, this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         cover = findViewById(R.id.imageView);
@@ -50,6 +55,7 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 MusicPlayer.getInstance().seekTo(nextSeekbarTime*1000);
+                timeSubject.setCurrentTime(nextSeekbarTime);
                 if (MusicPlayer.getInstance().getStatus() == 0) {
                     MusicPlayer.getInstance().setPausedTime(nextSeekbarTime*1000);
                 }
@@ -93,9 +99,20 @@ public class PlayerActivity extends AppCompatActivity {
         MusicPlayer.getInstance().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                MusicPlayer.getInstance().setCommand(nextCommand);
-                MusicPlayer.getInstance().buttonPressed();
+                MusicPlayer.getInstance().playNext();
                 updatePlayerUI(MusicPlayer.getInstance().getCurrentSong());
+            }
+        });
+        final Handler mHandler = new Handler();
+
+        PlayerActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(MusicPlayer.isInstanciated()) {
+                    int currentPosition = MusicPlayer.getInstance().getCurrentPosition()/1000;
+                    timeSubject.setCurrentTime(currentPosition);
+                }
+                mHandler.postDelayed(this, 1000);
             }
         });
     }
