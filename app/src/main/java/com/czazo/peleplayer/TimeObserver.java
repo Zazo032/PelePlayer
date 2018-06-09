@@ -1,15 +1,14 @@
 package com.czazo.peleplayer;
 
 import android.app.Activity;
-import android.content.Context;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class TimeObserver extends Observer {
-    TimeSubject subject;
-    Activity activity;
+    private TimeSubject subject;
+    private Activity activity;
 
-    public TimeObserver(TimeSubject subject, Activity activity) {
+    TimeObserver(TimeSubject subject, Activity activity) {
         this.subject = subject;
         this.activity = activity;
 

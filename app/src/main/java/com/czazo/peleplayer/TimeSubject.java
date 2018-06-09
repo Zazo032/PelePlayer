@@ -7,7 +7,7 @@ public class TimeSubject {
     private List<Observer> observers = new ArrayList<Observer>();
     private int currentTime;
 
-    public TimeSubject (){
+    TimeSubject (){
         currentTime = 0;
     }
 
@@ -24,7 +24,7 @@ public class TimeSubject {
         observers.add(observer);
     }
 
-    public void notifyAllObservers(){
+    private void notifyAllObservers(){
         for(Observer observer : observers) {
             observer.update();
         }

@@ -1,17 +1,13 @@
 package com.czazo.peleplayer;
 
 import android.app.Activity;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -24,6 +20,8 @@ public class PlayerActivity extends AppCompatActivity {
     Command playCommand, pauseCommand, nextCommand, prevCommand;
     TimeSubject timeSubject;
     TimeObserver timeObserver;
+    MusicMediator mediator;
+    Activity act = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +37,9 @@ public class PlayerActivity extends AppCompatActivity {
         songTitle = findViewById(R.id.song_title);
         currTime = findViewById(R.id.current_time);
         maxTime = findViewById(R.id.max_time);
+        mediator = new MusicMediator();
 
-        updatePlayerUI(MusicPlayer.getInstance().getCurrentSong());
+        mediator.updatePlayerUI(MusicPlayer.getInstance().getCurrentSong(), this, "play");
         sb.setMin(0);
         sb.incrementProgressBy(1);
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -68,7 +67,6 @@ public class PlayerActivity extends AppCompatActivity {
                 prevCommand = new PrevCommand((Activity)view.getContext());
                 MusicPlayer.getInstance().setCommand(prevCommand);
                 MusicPlayer.getInstance().buttonPressed();
-                updatePlayerUI(MusicPlayer.getInstance().getCurrentSong());
             }
         });
         next.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +75,6 @@ public class PlayerActivity extends AppCompatActivity {
                 nextCommand = new NextCommand((Activity)view.getContext());
                 MusicPlayer.getInstance().setCommand(nextCommand);
                 MusicPlayer.getInstance().buttonPressed();
-                updatePlayerUI(MusicPlayer.getInstance().getCurrentSong());
             }
         });
         playpause.setOnClickListener(new View.OnClickListener() {
@@ -99,8 +96,9 @@ public class PlayerActivity extends AppCompatActivity {
         MusicPlayer.getInstance().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                MusicPlayer.getInstance().playNext();
-                updatePlayerUI(MusicPlayer.getInstance().getCurrentSong());
+                nextCommand = new NextCommand(act);
+                MusicPlayer.getInstance().setCommand(nextCommand);
+                MusicPlayer.getInstance().buttonPressed();
             }
         });
         final Handler mHandler = new Handler();
@@ -115,31 +113,6 @@ public class PlayerActivity extends AppCompatActivity {
                 mHandler.postDelayed(this, 1000);
             }
         });
-    }
-
-    private void updatePlayerUI(Song s){
-        if (s.getCoverArt() != null) {
-            cover.setImageBitmap(s.getCoverArt());
-        } else {
-            cover.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.default_cover));
-        }
-        songTitle.setText(s.getTitle());
-        maxTime.setText(s.getDuration());
-        sb.setProgress(0);
-        sb.setMax(s.getDurationTime()/1000);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        switch (MusicPlayer.getInstance().getStatus()){
-            case 0:
-                playpause.setImageResource(R.drawable.ic_player_play);
-                break;
-            case 1:
-                playpause.setImageResource(R.drawable.ic_player_pause);
-                break;
-        }
     }
 
     @Override
