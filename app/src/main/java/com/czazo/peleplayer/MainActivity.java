@@ -41,16 +41,18 @@ public class MainActivity extends AppCompatActivity {
             mRecyclerView.setLayoutManager(mLayoutManager);
             mRecyclerView.setAdapter(new SongAdapter());
         }
+        new StopState().doAction(Context.getContext());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        switch (MusicPlayer.getInstance().getStatus()) {
-            case 0:
+        switch (Context.getContext().getState().toString()) {
+            case "StopState":
                 fab.hide();
                 break;
-            case 1:
+            case "PlayingState":
+            case "PauseState":
                 fab.show();
                 break;
         }

@@ -55,7 +55,7 @@ public class PlayerActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 MusicPlayer.getInstance().seekTo(nextSeekbarTime*1000);
                 timeSubject.setCurrentTime(nextSeekbarTime);
-                if (MusicPlayer.getInstance().getStatus() == 0) {
+                if (Context.getContext().getState().toString().equals("PauseState")) {
                     MusicPlayer.getInstance().setPausedTime(nextSeekbarTime*1000);
                 }
             }
@@ -80,12 +80,12 @@ public class PlayerActivity extends AppCompatActivity {
         playpause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (MusicPlayer.getInstance().getStatus()) {
-                    case 0:
+                switch (Context.getContext().getState().toString()) {
+                    case "PauseState":
                         playCommand = new PlayCommand(MusicPlayer.getInstance().getPosCurrentSong(), 1, (Activity)view.getContext());
                         MusicPlayer.getInstance().setCommand(playCommand);
                         break;
-                    case 1:
+                    case "PlayingState":
                         pauseCommand = new PauseCommand((Activity)view.getContext());
                         MusicPlayer.getInstance().setCommand(pauseCommand);
                         break;

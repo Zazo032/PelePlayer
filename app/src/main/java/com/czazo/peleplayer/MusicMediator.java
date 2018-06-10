@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -16,49 +17,57 @@ public class MusicMediator implements Mediator {
     @Override
     public void play(int mode, int pos, Activity act) {
         MusicPlayer.getInstance().play(pos);
-        MusicPlayer.getInstance().seekTo(MusicPlayer.getInstance().getPausedTime());
-        MusicPlayer.getInstance().setStatus(1);
-        switch (mode){
-            case 0: // Lanzar Activity
+        switch (Context.getContext().getState().toString()){
+            case "StopState": // Lanzar Activity
                 act.startActivity(new Intent(act, PlayerActivity.class));
                 break;
-            case 1: // Modificar IU reproductor
-                FloatingActionButton fab = act.findViewById(R.id.button_playpause);
-                fab.startAnimation(AnimationUtils.loadAnimation(act, R.anim.to_pause));
-                fab.setImageResource(R.drawable.ic_player_pause);
+            case "PauseState": // Modificar IU reproductor
+            case "PlayingState":
+                if (act.getLocalClassName().equals("PlayerActivity")) {
+                    FloatingActionButton fab = act.findViewById(R.id.button_playpause);
+                    fab.startAnimation(AnimationUtils.loadAnimation(act, R.anim.to_pause));
+                    fab.setImageResource(R.drawable.ic_player_pause);
+                    MusicPlayer.getInstance().seekTo(MusicPlayer.getInstance().getPausedTime());
+                } else {
+                    // Si se elimina este bloque, si ya está el FAB visible (state = playing/pause),
+                    // no se abriría el reproductor y simplemente se reproduciría la canción.
+                    // Para abrir el reproductor se tendría que pulsar el FAB.
+                    act.startActivity(new Intent(act, PlayerActivity.class));
+                }
                 break;
         }
+        new PlayingState().doAction(Context.getContext());
     }
 
     @Override
     public void pause(Activity act) {
         MusicPlayer.getInstance().pause();
         MusicPlayer.getInstance().setPausedTime(MusicPlayer.getInstance().getCurrentPosition());
-        MusicPlayer.getInstance().setStatus(0);
         FloatingActionButton fab = act.findViewById(R.id.button_playpause);
         fab.startAnimation(AnimationUtils.loadAnimation(act, R.anim.to_play));
         fab.setImageResource(R.drawable.ic_player_play);
+        new PauseState().doAction(Context.getContext());
     }
 
     @Override
     public void nextSong(Activity act) {
         MusicPlayer.getInstance().playNext();
-        if (MusicPlayer.getInstance().getStatus() == 0) {
+        if (Context.getContext().getState().toString().equals("PauseState")) {
             FloatingActionButton fab = act.findViewById(R.id.button_playpause);
             fab.startAnimation(AnimationUtils.loadAnimation(act, R.anim.to_pause));
             fab.setImageResource(R.drawable.ic_player_pause);
-            MusicPlayer.getInstance().setStatus(1);
+            new PlayingState().doAction(Context.getContext());
         }
     }
 
     @Override
     public void prevSong(Activity act) {
         MusicPlayer.getInstance().playPrevious();
-        if (MusicPlayer.getInstance().getStatus() == 0) {
+        if (Context.getContext().getState().toString().equals("PauseState")) {
             FloatingActionButton fab = act.findViewById(R.id.button_playpause);
             fab.startAnimation(AnimationUtils.loadAnimation(act, R.anim.to_pause));
             fab.setImageResource(R.drawable.ic_player_pause);
-            MusicPlayer.getInstance().setStatus(1);
+            new PlayingState().doAction(Context.getContext());
         }
     }
 
@@ -82,11 +91,11 @@ public class MusicMediator implements Mediator {
             currTime.setText("00:00");
         }
         sb.setMax(s.getDurationTime()/1000);
-        switch (MusicPlayer.getInstance().getStatus()){
-            case 0:
+        switch (Context.getContext().getState().toString()){
+            case "PauseState":
                 playpause.setImageResource(R.drawable.ic_player_play);
                 break;
-            case 1:
+            case "PlayingState":
                 playpause.setImageResource(R.drawable.ic_player_pause);
                 break;
         }

@@ -9,8 +9,7 @@ import java.util.List;
 
 public class MusicPlayer extends MediaPlayer {
     private static MusicPlayer instance;
-    private int posCurrentSong, status;
-    // 0 = Stop/Pause, 1 = Play
+    private int posCurrentSong;
     private List<Song> songs;
     private int pausedTime;
     private Command command;
@@ -22,7 +21,6 @@ public class MusicPlayer extends MediaPlayer {
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .build());
         instance = this;
-        status = 0;
     }
 
     public static MusicPlayer getInstance() {
@@ -90,14 +88,6 @@ public class MusicPlayer extends MediaPlayer {
 
     public void setPausedTime(int p){
         this.pausedTime = p;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int s) {
-        this.status = s;
     }
 
     public void setSongs(List<Song> songs) {
