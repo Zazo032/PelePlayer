@@ -29,4 +29,8 @@ public class TimeSubject {
             observer.update();
         }
     }
+
+    public List<Observer> getObservers() {
+        return observers;
+    }
 }

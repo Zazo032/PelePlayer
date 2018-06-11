@@ -14,6 +14,9 @@ public class Song {
     private String duration;
     private int durationTime;
 
+    Song() {
+    }
+
     @SuppressLint("DefaultLocale")
     Song(String filePath) {
         this.filePath = filePath;

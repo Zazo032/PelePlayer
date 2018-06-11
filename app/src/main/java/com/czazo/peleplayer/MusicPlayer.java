@@ -17,8 +17,8 @@ public class MusicPlayer extends MediaPlayer {
     private MusicPlayer() {
         super();
         this.setAudioAttributes(new AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
         instance = this;
     }
@@ -28,6 +28,10 @@ public class MusicPlayer extends MediaPlayer {
             instance = new MusicPlayer();
         }
         return instance;
+    }
+
+    public static void setInstance(MusicPlayer ins) {
+        instance = ins;
     }
 
     public static boolean isInstanciated() {
@@ -97,6 +101,11 @@ public class MusicPlayer extends MediaPlayer {
     public void setCommand(Command c){
         this.command = c;
     }
+
+    public Command getCommand() {
+        return command;
+    }
+
     public void buttonPressed(){
         command.execute();
     }
