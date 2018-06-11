@@ -1,8 +1,5 @@
 package com.czazo.peleplayer;
 
-import android.app.Activity;
-import android.widget.TextView;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -14,7 +11,7 @@ import static org.junit.Assert.*;
 public class ObserverTest {
 
     @Mock
-    PlayerActivity mockActivity;
+    private PlayerActivity mockActivity;
 
     @Test
     public void attach() {

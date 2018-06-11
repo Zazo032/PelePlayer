@@ -1,9 +1,6 @@
 package com.czazo.peleplayer;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 
@@ -19,6 +16,12 @@ public class StateTest {
     public void changeToPlayingState() {
         new PlayingState().doAction(Context.getContext());
         assertEquals("PlayingState", Context.getContext().getState().toString());
+    }
+
+    @Test
+    public void changeToPauseState() {
+        new PauseState().doAction(Context.getContext());
+        assertEquals("PauseState", Context.getContext().getState().toString());
     }
 
 }
